@@ -108,18 +108,10 @@ jobs:
           command: |
             export PATH=$PATH:/snap/bin
             juju-wait -w -t 1150
-            #- run:
-            # name: "Verify slurmrestd"
-            #  command: |
-            #  sudo apt install python3-venv
-            #  python3 -m venv venv
-            #  source venv/bin/activate
-            #  pip3 install python_jwt
-            #  make test-slurmrestd-api-returns-200
       - run:
           name: "add 50 units"
           command: |
-            juju add-unit slurmd -n 5 #0
+            juju add-unit slurmd -n 25
       - run:
           name: "Wait for deployment status"
           no_output_timeout: 20m
@@ -147,10 +139,10 @@ jobs:
           name: show juju slurmd logs
           command: |
             juju debug-log --include slurmd --no-tail --replay
-
-          #   - store_artifacts:
-          #  path: /tmp/slurm-unit-logs
-          # when: always
+      - run:
+          name: show juju slurmdbd logs
+          command: |
+            juju debug-log --include slurmdbd --no-tail --replay
 
       - save_cache:
           name: Cache built charms once we validate they successfully deploy.
@@ -235,15 +227,52 @@ jobs:
             juju model-config logging-config="<root>=DEBUG;juju.worker.dependency=CRITICAL;unit=DEBUG"
             juju add-space -m circleci-$CIRCLE_SHA1-centos nat 172.31.90.0/24 172.31.91.0/24 172.31.92.0/24 172.31.93.0/24
             juju deploy -m circleci-$CIRCLE_SHA1-centos ./bundles/slurm-core-centos7-aws/bundle.yaml
+      - run:
+          name: "Wait for deployment status"
+          no_output_timeout: 20m
+          command: |
+            export PATH=$PATH:/snap/bin
+            juju-wait -w -t 1150
+      - run:
+          name: "add 25 units"
+          command: |
+            juju add-unit slurmd -n 25
+      - run:
+          name: "Wait for deployment status"
+          no_output_timeout: 20m
+          command: |
+            export PATH=$PATH:/snap/bin
+            sleep 5m
+      - run:
+          name: "Show juju status"
+          command: |
+            juju status
+          when: always
+      - run:
+          name: "run sinfo"
+          command: |
+            juju run --unit slurmd/0 "sinfo"
+          when: always
+
+      - run:
+          name: show juju slurmctld logs
+          command: |
+            juju debug-log --include slurmctld --no-tail --replay
+          when: always
+      - run:
+          name: show juju slurmd logs
+          command: |
+            juju debug-log --include slurmd --no-tail --replay
+      - run:
+          name: show juju slurmdbd logs
+          command: |
+            juju debug-log --include slurmdbd --no-tail --replay
 
       - run:
           name: "Force remove machine if hanging and destroy-model"
           command: |
             echo $JUJU_CIRCLECI_USER_PASSWORD | juju login --user circleci
             # Check to see if the model is empty, --force detroy-machines if not
-            if ! [ `juju status 2>&1 | grep -c empty` -gt 0 ]; then
-                juju remove-machine -m circleci-$CIRCLE_SHA1-centos {0..4} --force
-            fi
             juju destroy-model circleci-$CIRCLE_SHA1-centos -y
           when: always
 
