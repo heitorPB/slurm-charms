@@ -1,6 +1,7 @@
 name: "release"
   
 on:
+  push:
   release:
     types: [published]
 
@@ -16,12 +17,12 @@ jobs:
           ls -la
           make charms
           tar -cvf slurm_charms.tar slurmd.charm slurmctld.charm slurmdbd.charm slurmrestd.charm
-      - name: "Upload binaries to release"
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: slurm_charms.tar
-          asset_name: slurm_charms
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "Slurm Charms tar file"
+          #- name: "Upload binaries to release"
+          #uses: svenstaro/upload-release-action@v2
+          #with:
+          #repo_token: ${{ secrets.GITHUB_TOKEN }}
+          #file: slurm_charms.tar
+          #asset_name: slurm_charms
+          #tag: ${{ github.ref }}
+          #overwrite: true
+          #body: "Slurm Charms tar file"
