@@ -16,7 +16,7 @@ jobs:
           sudo snap install --beta charmcraft
           ls -la
           for charm in slurmctld slurmd slurmdbd slurmrestd; do
-              cd $charm
+              cd charm-$charm
               charmcraft build
               mv $charm.charm ../
               cd ..
