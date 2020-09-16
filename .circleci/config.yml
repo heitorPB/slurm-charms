@@ -249,7 +249,7 @@ jobs:
           no_output_timeout: 20m
           command: |
             export PATH=$PATH:/snap/bin
-            sleep 5m
+            sleep 9m
       - run:
           name: "Show juju status"
           command: |
