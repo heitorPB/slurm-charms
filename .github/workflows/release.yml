@@ -17,7 +17,7 @@ jobs:
           ls -la
           for charm in slurmctld slurmd slurmdbd slurmrestd; do
               cd charm-$charm
-              charmcraft build
+              charmcraft build --verbose
               mv $charm.charm ../
               cd ..
           done
