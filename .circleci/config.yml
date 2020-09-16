@@ -109,21 +109,28 @@ jobs:
             export PATH=$PATH:/snap/bin
             juju-wait -w -t 1150
       - run:
-          name: "add 50 units"
+          name: "add 25 units"
           command: |
-            juju add-unit slurmd -n 25
+            juju add-unit slurmd -n 8
       - run:
           name: "Wait for deployment status"
           no_output_timeout: 20m
           command: |
-            export PATH=$PATH:/snap/bin
-            #juju-wait -w -t 2150
-            sleep 5m
-      - run:
-          name: "Show juju status"
-          command: |
+            sleep 1m
             juju status
-          when: always
+      - run:
+          name: "Wait for deployment status"
+          no_output_timeout: 20m
+          command: |
+            sleep 1m
+            juju status
+      - run:
+          name: "Wait for deployment status"
+          no_output_timeout: 20m
+          command: |
+            sleep 3m
+            juju status
+
       - run:
           name: "run sinfo"
           command: |
@@ -236,7 +243,7 @@ jobs:
       - run:
           name: "add 25 units"
           command: |
-            juju add-unit slurmd -n 25
+            juju add-unit slurmd -n 10
       - run:
           name: "Wait for deployment status"
           no_output_timeout: 20m
