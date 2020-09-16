@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: "Build & test"
         run: |
-          sudo snap install --beta charmcraft
+          sudo snap install --edge charmcraft
           ls -la
           for charm in slurmctld slurmd slurmdbd slurmrestd; do
               cd charm-$charm
