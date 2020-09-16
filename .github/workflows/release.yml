@@ -15,7 +15,11 @@ jobs:
         run: |
           sudo snap install --beta charmcraft
           ls -la
-          make charms
+          for charm in slurmctld slurmd slurmdbd slurmrestd; do
+              cd $charm
+              charmcraft build
+              mv $charm.charm ../
+          done
           tar -cvf slurm_charms.tar slurmd.charm slurmctld.charm slurmdbd.charm slurmrestd.charm
           #- name: "Upload binaries to release"
           #uses: svenstaro/upload-release-action@v2
