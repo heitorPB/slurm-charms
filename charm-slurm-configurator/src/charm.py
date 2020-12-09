@@ -88,6 +88,9 @@ class SlurmConfiguratorCharm(CharmBase):
             self._nhc.on.nhc_bin_available:
             self._on_check_status_and_write_config,
 
+            self._nhc.on.nhc_bin_unavailable:
+            self._on_check_status_and_write_config,
+
             # ######## Slurm component lifecycle events ######## #
             self._slurmctld.on.slurmctld_available:
             self._on_check_status_and_write_config,
@@ -105,6 +108,9 @@ class SlurmConfiguratorCharm(CharmBase):
             self._on_check_status_and_write_config,
 
             self._slurmd.on.slurmd_unavailable:
+            self._on_check_status_and_write_config,
+
+            self._slurmd.on.slurmd_departed:
             self._on_check_status_and_write_config,
 
             self._slurmrestd.on.slurmrestd_available:

@@ -61,6 +61,10 @@ class Slurmd(Object):
             self._on_relation_changed
         )
         self.framework.observe(
+            self._charm.on[self._relation_name].relation_departed,
+            self._on_relation_departed
+        )
+        self.framework.observe(
             self._charm.on[self._relation_name].relation_broken,
             self._on_relation_broken
         )
@@ -96,11 +100,15 @@ class Slurmd(Object):
             event.defer()
             return
 
+    def _on_relation_departed(self, event):
+        self.on.slurmd_departed.emit()
+
     def _on_relation_broken(self, event):
         if self.framework.model.unit.is_leader():
             event.relation.data[self.model.app]['munge_key'] = ""
             self.set_slurm_config_on_app_relation_data("")
         self._charm.set_slurmd_available(False)
+        self.on.slurmd_unavailable.emit()
 
     def _assemble_slurm_configurator_inventory(self):
         """Assemble the slurm-configurator partition."""

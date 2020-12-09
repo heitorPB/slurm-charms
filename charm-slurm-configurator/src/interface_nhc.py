@@ -15,10 +15,15 @@ class NhcBinAvailableEvent(EventBase):
     """Emmited when the nhc_bin is received via relation data."""
 
 
+class NhcBinUnavailableEvent(EventBase):
+    """Emmited when the nhc_bin should no longer be in the relation data."""
+
+
 class NhcEvents(ObjectEvents):
     """NhcEvents."""
 
     nhc_bin_available = EventSource(NhcBinAvailableEvent)
+    nhc_bin_unavailable = EventSource(NhcBinUnavailableEvent)
 
 
 class Nhc(Object):
@@ -42,6 +47,10 @@ class Nhc(Object):
         self.framework.observe(
             self._charm.on[self._relation_name].relation_changed,
             self._on_relation_changed
+        )
+        self.framework.observe(
+            self._charm.on[self._relation_name].relation_broken,
+            self._on_relation_broken
         )
 
     def _on_relation_created(self, event):
@@ -82,6 +91,10 @@ class Nhc(Object):
             'health_check_node_state': nhc_health_check_node_state,
         })
         self.on.nhc_bin_available.emit()
+
+    def _on_relation_broken(self, event):
+        self._stored.nhc_info = ""
+        self.on.nhc_bin_unavailable.emit()
 
     def get_nhc_info(self):
         """Return nhc_info."""
